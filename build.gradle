@@ -1,0 +1,71 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.4.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+plugins {
+	id 'nu.studer.jooq' version '2.0.6'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-jooq')
+	compile("mysql:mysql-connector-java:5.+")
+	jooqRuntime('mysql:mysql-connector-java:5.+')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+jooq {
+	version = '3.9.2'
+	edition = 'OSS'
+	sample(sourceSets.main) {
+		jdbc {
+			driver = "com.mysql.jdbc.Driver"
+			url = "jdbc:mysql://localhost:3306/jooq-practice"
+			user = "root"
+			password = "kingbbode"
+		}
+		generator {
+			name = 'org.jooq.util.JavaGenerator'
+			strategy {
+				name = 'org.jooq.util.example.JPrefixGeneratorStrategy '
+			}
+			database {
+				name = 'org.jooq.util.mysql.MySQLDatabase'
+				inputSchema = "jooq-practice"
+				includes = ".*"
+				excludes = ""
+			}
+			generate {
+				relations = true
+				deprecated = true
+				instanceFields = true
+				generatedAnnotation = true
+				records = true
+				pojos = true
+			}
+			target {
+				packageName = "com.kingbbode.entities"
+				directory = "jooq"
+			}
+		}
+	}
+}
